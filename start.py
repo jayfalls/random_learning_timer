@@ -2,13 +2,13 @@ import asyncio
 import random
 import simpleaudio as sa
 import sys
+import time
 
 
 # VARIABLES
-TIME_SPAN: tuple = (6, 18) # Minutes
+TIME_SPAN: tuple = (360, 1080) # Seconds
 NOTIFY_SOUND = sa.WaveObject.from_wave_file("sounds/notify.wav")
 FINISHED_SOUND = sa.WaveObject.from_wave_file("sounds/study_done.wav")
-DISPLAY_REFRESH: int = 30 # Seconds
 
 # States
 time_up: bool = True
@@ -55,24 +55,29 @@ async def time_has_passed(length_minutes: int) -> bool:
 
 async def random_notify() -> None:
     global time_up
-    print("running")
+    lowest_time, longest_time = TIME_SPAN
+    print("Random Timer Started")
     while not time_up:
-        time_range: tuple = tuple(minutes * 60 for minutes in TIME_SPAN)
-        waiting_time: float = random.randint(time_range)
+        waiting_time: int = random.randint(lowest_time, longest_time)
+        sys.stdout.flush()  # Force immediate display
         await asyncio.sleep(waiting_time)
         print()
+        print("Take a 10 second break")
         play_notify = NOTIFY_SOUND.play()
         play_notify.wait_done()  # Wait for the sound to finish playing
-    print("done")
+    print("Study Session Complete")
     play_done = FINISHED_SOUND.play()
     play_done.wait_done()  # Wait for the sound to finish playing
 
 async def print_progress() -> None:
     global time_up
+    time_passed: int = 0
     while not time_up:
-        print("█", end="")
+        time_passed += 1
+        minutes, seconds = divmod(time_passed, 60)
+        print(f"{minutes}:{seconds}", end="\r")
         sys.stdout.flush()  # Force immediate display
-        await asyncio.sleep(DISPLAY_REFRESH)
+        await asyncio.sleep(1)
 
 ## Timer Start
 async def random_timer(length_minutes: int) -> None:
