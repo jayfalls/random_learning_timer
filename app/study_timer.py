@@ -7,8 +7,8 @@ import time
 
 # VARIABLES
 TIME_SPAN: tuple = (360, 1080) # Seconds
-NOTIFY_SOUND = sa.WaveObject.from_wave_file("sounds/notify.wav")
-FINISHED_SOUND = sa.WaveObject.from_wave_file("sounds/study_done.wav")
+NOTIFY_SOUND = sa.WaveObject.from_wave_file("app/sounds/notify.wav")
+FINISHED_SOUND = sa.WaveObject.from_wave_file("app/sounds/study_done.wav")
 
 # States
 time_up: bool = True
@@ -91,6 +91,7 @@ async def random_timer(length_minutes: int) -> None:
 
 # MAIN PROCESS
 async def start() -> None:
+    play_notify = NOTIFY_SOUND.play()
     study_length = get_study_length()
     await random_timer(study_length)
 
