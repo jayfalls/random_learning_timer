@@ -10,4 +10,3 @@ This greatly improves the brains learning as told by Andrew Hueberman.
 git clone https://github.com/jayfalls/study_timer
 cd study_timer
 ./start.sh
-``
