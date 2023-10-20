@@ -1,10 +1,12 @@
 """
 This module is responsible for generating a random timer for a specified length of time in minutes.
 """
-
+# DEPENDENCIES
+## Third Party
 import asyncio
 import random
-import study_io
+## App
+from components import study_io
 
 # VARIABLES
 ## Constants
@@ -20,7 +22,14 @@ class RandomTimer:
         None
 
     Methods:
-        __init__: Initializes an instance of the class.
+        time_has_passed(length_minutes: int) 
+            Checks if a certain amount of time has passed.
+        random_notify() 
+            Generates a random notification at random intervals.
+        print_progress() 
+            Prints the progress every second.
+        start_timer(length_minutes: int) 
+            Generates random timers for a specified length of time in minutes.
 
     Example usage:
         timer = RandomTimer()
@@ -29,15 +38,16 @@ class RandomTimer:
     def __init__(self):
         self.time_up: bool = True
 
-    async def time_has_passed(self, length_minutes: int) -> bool:
+    # INNER FUNCTIONS
+    async def __time_has_passed(self, length_minutes: int) -> None:
         """
-        Check if a certain amount of time has passed.
+        A function that checks if a certain amount of time has passed.
 
-        Args:
+        Parameters:
             length_minutes (int): The length of time in minutes.
 
         Returns:
-            bool: True if the specified amount of time has passed, False otherwise.
+            None: This function does not return anything.
         """
         time_passed: int = 1
         length_seconds: int = length_minutes * 60
@@ -46,9 +56,8 @@ class RandomTimer:
             time_passed += 1
             if time_passed > length_seconds:
                 break
-        return True
 
-    async def random_notify(self) -> None:
+    async def __random_notify(self) -> None:
         """
         Asynchronous function that generates random notifications at random intervals.
         The function does the following:
@@ -72,7 +81,7 @@ class RandomTimer:
             print()
             study_io.play_notify()
 
-    async def print_progress(self) -> None:
+    async def __print_progress(self) -> None:
         """
         Asynchronously prints the progress every second.
 
@@ -89,10 +98,10 @@ class RandomTimer:
             study_io.immediate_print(f"{minutes}:{seconds}")
             await asyncio.sleep(1)
 
-    ## Timer Start
+    # OUTER FUNCTIONS
     async def start_timer(self, length_minutes: int) -> None:
         """
-        Generates a random timer for a specified length of time in minutes.
+        Generates random timers for a specified length of time in minutes.
 
         Args:
             length_minutes (int): The length of time for the timer, in minutes.
@@ -101,10 +110,12 @@ class RandomTimer:
             None
         """
         self.time_up = False
-        counting_time = asyncio.create_task(self.time_has_passed(length_minutes))
-        asyncio.create_task(self.random_notify())
-        asyncio.create_task(self.print_progress())
-        self.time_up = await counting_time
+        await asyncio.gather(
+            self.__time_has_passed(length_minutes),
+            self.__random_notify(),
+            self.__print_progress()
+        )
+        self.time_up = True
         print()
         study_io.immediate_print("Study Session Complete")
         study_io.play_finished()

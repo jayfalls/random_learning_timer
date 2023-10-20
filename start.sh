@@ -3,4 +3,4 @@ source env/bin/activate   # Activate the virtual environment
 
 pip install -r requirements.txt
 
-xterm -e "python app/study_timer.py"
+xterm -e "python3 app/study_timer.py"

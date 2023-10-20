@@ -1,10 +1,12 @@
 """
 This module defines classes and functions related to sound and CLI input/output.
 """
-
+# DEPENDENCIES
+## Third Party
 from enum import Enum
 import simpleaudio as sa
 from simpleaudio import WaveObject
+
 
 # VARIABLES
 ## Constants
@@ -59,7 +61,8 @@ def get_study_length() -> int:
     return study_length
 
 
-# CLI OUTPUT
+# OUTPUT
+## CLI
 def immediate_print(text: str) -> None:
     """
     Print the given text immediately to the console.
@@ -68,12 +71,12 @@ def immediate_print(text: str) -> None:
         text (str): The text to be printed.
 
     Returns:
-        None: This function does not return anything.
+        NoReturn: This function does not return anything.
     """
     print(text, end="\r", flush=True)
 
 
-# AUDIO
+## Audio
 def _play_sound(sound: WaveObject) -> None:
     """
     Play a sound.
@@ -84,8 +87,7 @@ def _play_sound(sound: WaveObject) -> None:
     Returns:
         None: This function does not return anything.
     """
-    playing_sound = sound.play()
-    playing_sound.wait_done()
+    sound.play()
 
 def play_notify() -> None:
     """

@@ -1,10 +1,12 @@
 """
 This module contains the main process for starting a study session.
 """
-
+# DEPENDENCIES
+## Third Party
 import asyncio
-from random_timer import RandomTimer
-import study_io
+## App
+from components import study_io
+from components.random_timer import RandomTimer
 
 
 # MAIN PROCESS
@@ -27,4 +29,6 @@ async def start() -> None:
     await random_timer.start_timer(study_length)
     await start()
 
-asyncio.run(start())
+if __name__ == "__main__":
+    print("Starting Up...")
+    asyncio.run(start())
