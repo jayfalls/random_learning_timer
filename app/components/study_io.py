@@ -54,7 +54,7 @@ def get_study_length() -> int:
             continue
         study_length = int(study_length)
         # Make sure amount is valid
-        if study_length < 15:
+        if study_length < 1:
             print("Time must be more than 15 minutes")
             continue
         break

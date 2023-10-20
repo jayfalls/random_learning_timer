@@ -110,11 +110,12 @@ class RandomTimer:
             None
         """
         self.time_up = False
-        await asyncio.gather(
+        tasks: tuple = (
             self.__time_has_passed(length_minutes),
             self.__random_notify(),
             self.__print_progress()
         )
+        await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
         self.time_up = True
         print()
         study_io.immediate_print("Study Session Complete")
