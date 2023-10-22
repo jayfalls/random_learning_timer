@@ -4,12 +4,12 @@ This module contains the main process for starting a study session.
 # DEPENDENCIES
 ## Builtin
 import asyncio
+from enum import Enum
 ## App
-from app.interfaces.component_interfaces import IOInterface
-from app.interfaces.component_interfaces import TimerInterface
+from app.constants.signals import SIGNALS
 from app.interfaces import component_interfaces
-## Temp
-from app.components import study_io
+from app.interfaces.component_interfaces import IOInterface, TimerInterface
+from app.interfaces.signal_observer import SignalObserver
 
 
 # INTERFACES
@@ -25,7 +25,7 @@ def get_study_length(interface: IOInterface) -> int:
     """
     return interface.get_study_length()
 
-async def start_random_timer(interface: TimerInterface, study_length: int) -> None:
+async def start_timer(interface: TimerInterface, study_length: int) -> None:
     """
     Start a random timer from the given interface for the given study length.
 
@@ -40,6 +40,59 @@ async def start_random_timer(interface: TimerInterface, study_length: int) -> No
 
 
 # MAIN PROCESS
+def initialise_signal_observer(io_interface: IOInterface) -> SignalObserver:
+    """
+    Initializes a signal observer with the given IO interface.
+
+    Args:
+        io_interface (IOInterface): An instance of the IOInterface class.
+
+    Returns:
+        SignalObserver: An instance of the SignalObserver class.
+
+    """
+    IO_SIGNALS: Enum = SIGNALS.IO_SIGNALS.value
+    AUDIO_SIGNALS: Enum = SIGNALS.AUDIO_SIGNALS.value
+    io_signal_methods: dict = {
+        IO_SIGNALS.PRINT_OUTPUT.value: io_interface.print,
+    }
+    audio_signal_methods: dict = {
+        AUDIO_SIGNALS.NOTIFY.value: io_interface.notify,
+        AUDIO_SIGNALS.FINISHED.value: io_interface.finished,
+    }
+    signal_observer = SignalObserver()
+    signal_observer.attach_signalled_observers(io_signal_methods)
+    signal_observer.attach_signalled_observers(audio_signal_methods)
+    return signal_observer
+
+def initialise_interfaces() -> tuple:
+    """
+    Initialise the interfaces required for the system.
+
+    Returns:
+        A tuple containing the IO interface and the Timer interface.
+    """
+    io_interface: IOInterface = component_interfaces.CLIIOInterface()
+    signal_observer = initialise_signal_observer(io_interface)
+    timer_interface: TimerInterface = component_interfaces.RandomTimerInterface(signal_observer)
+
+    return (io_interface, timer_interface)
+
+async def initialise_timer() -> None:
+    """
+    Asynchronously initializes a timer.
+    
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
+    io_interface, timer_interface = initialise_interfaces()
+    io_interface.notify()
+    study_length: int = get_study_length(io_interface)
+    await start_timer(timer_interface, study_length)
+
 async def start() -> None:
     """
     Start the study session.
@@ -53,14 +106,10 @@ async def start() -> None:
     Returns:
     None
     """
-    study_io_interface = component_interfaces.StudyIOInterface()
-    study_length: int = get_study_length(study_io_interface)
-    random_timer_interface = component_interfaces.RandomTimerInterface()
-    await start_random_timer(random_timer_interface, study_length)
+    await initialise_timer()
     # Loop the function
     await start()
 
 if __name__ == "__main__":
     print("Starting Up...")
-    study_io.play_notify()
     asyncio.run(start())

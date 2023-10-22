@@ -1,27 +1,7 @@
 """
 This module defines classes and functions related to sound and CLI input/output.
 """
-# DEPENDENCIES
-## Builtin
-from enum import Enum
-## Third Party
-import simpleaudio as sa
-from simpleaudio import WaveObject
-
-
-# VARIABLES
-## Constants
-NOTIFY_SOUND: WaveObject = sa.WaveObject.from_wave_file("app/sounds/notify.wav")
-FINISHED_SOUND: WaveObject = sa.WaveObject.from_wave_file("app/sounds/study_done.wav")
-class Sounds(Enum):
-    """
-    Enum class for representing different sounds.
-    """
-    NOTIFY_SOUND = NOTIFY_SOUND
-    FINISHED_SOUND = FINISHED_SOUND
-
-
-# CLI INPUT
+# HELPER FUNCTIONS
 ## Error Handling
 def _is_valid_number(string_input: str) -> bool:
     """
@@ -38,7 +18,7 @@ def _is_valid_number(string_input: str) -> bool:
     print("Please enter a valid number")
     return False
 
-## User Values
+# INPUT
 def get_study_length() -> int:
     """
     Get the length of a study session from user.
@@ -63,7 +43,6 @@ def get_study_length() -> int:
 
 
 # OUTPUT
-## CLI
 def immediate_print(text: str) -> None:
     """
     Print the given text immediately to the console.
@@ -75,35 +54,3 @@ def immediate_print(text: str) -> None:
         NoReturn: This function does not return anything.
     """
     print(text, end="\r", flush=True)
-
-
-## Audio
-def _play_sound(sound: WaveObject) -> None:
-    """
-    Play a sound.
-
-    Args:
-        sound (WaveObject): The sound to be played.
-
-    Returns:
-        None: This function does not return anything.
-    """
-    sound.play()
-
-def play_notify() -> None:
-    """
-    Play a notification sound.
-
-    Returns:
-        None: This function does not return anything.
-    """
-    _play_sound(Sounds.NOTIFY_SOUND.value)
-
-def play_finished() -> None:
-    """
-    Play a finished sound.
-
-    Returns:
-        None: This function does not return anything.
-    """
-    _play_sound(Sounds.FINISHED_SOUND.value)

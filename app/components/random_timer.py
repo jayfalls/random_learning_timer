@@ -4,12 +4,18 @@ This module is responsible for generating a random timer for a specified length 
 # DEPENDENCIES
 ## Builtin
 import asyncio
+from enum import Enum
 import random
 ## App
-from app.components import study_io
+from app.constants.signals import SIGNALS
+from app.interfaces.signal_observer import SignalObserver
 
 # VARIABLES
 ## Constants
+### Signals
+IO_SIGNALS: Enum = SIGNALS.IO_SIGNALS.value
+AUDIO_SIGNALS: Enum = SIGNALS.AUDIO_SIGNALS.value
+### Modifiers
 RANDOM_TIME_SPAN: tuple = (360, 1080) # Seconds
 
 
@@ -36,8 +42,9 @@ class RandomTimer:
         timer = RandomTimer()
         timer.start_random_timer(minutes: int)
     """
-    def __init__(self):
+    def __init__(self, signal_observer: SignalObserver):
         self.time_up: bool = True
+        self.signal_observer = signal_observer
 
     # INNER FUNCTIONS
     async def __time_has_passed(self, length_minutes: int) -> None:
@@ -71,16 +78,16 @@ class RandomTimer:
         Returns:
         None
         """
-        study_io.immediate_print("Random Timer Started")
+        self.signal_observer.notify(IO_SIGNALS.PRINT_OUTPUT.value, "Random Timer Started")
         print()
         lowest_time, longest_time = RANDOM_TIME_SPAN
         while not self.time_up:
             waiting_time: int = random.randint(lowest_time, longest_time)
             await asyncio.sleep(waiting_time)
             print()
-            study_io.immediate_print("Take a 10 second break")
+            self.signal_observer.notify(IO_SIGNALS.PRINT_OUTPUT.value, "Take a 10 second break")
             print()
-            study_io.play_notify()
+            self.signal_observer.notify(AUDIO_SIGNALS.NOTIFY.value)
 
     async def __print_progress(self) -> None:
         """
@@ -96,7 +103,7 @@ class RandomTimer:
         while not self.time_up:
             time_passed += 1
             minutes, seconds = divmod(time_passed, 60)
-            study_io.immediate_print(f"{minutes}:{seconds}")
+            self.signal_observer.notify(IO_SIGNALS.PRINT_OUTPUT.value, f"{minutes}:{seconds}")
             await asyncio.sleep(1)
 
     # OUTER FUNCTIONS
@@ -119,5 +126,5 @@ class RandomTimer:
         await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
         self.time_up = True
         print()
-        study_io.immediate_print("Study Session Complete")
-        study_io.play_finished()
+        self.signal_observer.notify(IO_SIGNALS.PRINT_OUTPUT.value, "Study Session Complete!")
+        self.signal_observer.notify(AUDIO_SIGNALS.FINISHED.value)
