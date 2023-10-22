@@ -2,8 +2,9 @@
 This module defines classes and functions related to sound and CLI input/output.
 """
 # DEPENDENCIES
-## Third Party
+## Builtin
 from enum import Enum
+## Third Party
 import simpleaudio as sa
 from simpleaudio import WaveObject
 
@@ -54,8 +55,8 @@ def get_study_length() -> int:
             continue
         study_length = int(study_length)
         # Make sure amount is valid
-        if study_length < 1:
-            print("Time must be more than 15 minutes")
+        if study_length < 5:
+            print("Time must be more than 5 minutes")
             continue
         break
     return study_length

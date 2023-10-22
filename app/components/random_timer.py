@@ -2,17 +2,18 @@
 This module is responsible for generating a random timer for a specified length of time in minutes.
 """
 # DEPENDENCIES
-## Third Party
+## Builtin
 import asyncio
 import random
 ## App
-from components import study_io
+from app.components import study_io
 
 # VARIABLES
 ## Constants
-TIME_SPAN: tuple = (360, 1080) # Seconds
+RANDOM_TIME_SPAN: tuple = (360, 1080) # Seconds
 
 
+# FUNCTIONS
 class RandomTimer:
     """
     This class represents a random timer.
@@ -72,7 +73,7 @@ class RandomTimer:
         """
         study_io.immediate_print("Random Timer Started")
         print()
-        lowest_time, longest_time = TIME_SPAN
+        lowest_time, longest_time = RANDOM_TIME_SPAN
         while not self.time_up:
             waiting_time: int = random.randint(lowest_time, longest_time)
             await asyncio.sleep(waiting_time)
