@@ -12,6 +12,12 @@ from app.interfaces.component_interfaces import IOInterface, TimerInterface
 from app.interfaces.signal_observer import SignalObserver
 
 
+# VARIABLES
+## Constants
+IO_SIGNALS: Enum = SIGNALS.IO_SIGNALS.value
+AUDIO_SIGNALS: Enum = SIGNALS.AUDIO_SIGNALS.value
+
+
 # INTERFACES
 def get_study_length(interface: IOInterface) -> int:
     """
@@ -51,8 +57,6 @@ def initialise_signal_observer(io_interface: IOInterface) -> SignalObserver:
         SignalObserver: An instance of the SignalObserver class.
 
     """
-    IO_SIGNALS: Enum = SIGNALS.IO_SIGNALS.value
-    AUDIO_SIGNALS: Enum = SIGNALS.AUDIO_SIGNALS.value
     io_signal_methods: dict = {
         IO_SIGNALS.PRINT_OUTPUT.value: io_interface.print,
     }
@@ -73,10 +77,10 @@ def initialise_interfaces() -> tuple:
         A tuple containing the IO interface and the Timer interface.
     """
     io_interface: IOInterface = component_interfaces.CLIIOInterface()
-    signal_observer = initialise_signal_observer(io_interface)
+    signal_observer: SignalObserver = initialise_signal_observer(io_interface)
     timer_interface: TimerInterface = component_interfaces.RandomTimerInterface(signal_observer)
 
-    return (io_interface, timer_interface)
+    return (signal_observer, io_interface, timer_interface)
 
 async def initialise_timer() -> None:
     """
@@ -88,8 +92,8 @@ async def initialise_timer() -> None:
     Returns:
         None
     """
-    io_interface, timer_interface = initialise_interfaces()
-    io_interface.notify()
+    signal_observer, io_interface, timer_interface = initialise_interfaces()
+    signal_observer.notify(AUDIO_SIGNALS.NOTIFY.value)
     study_length: int = get_study_length(io_interface)
     await start_timer(timer_interface, study_length)
 

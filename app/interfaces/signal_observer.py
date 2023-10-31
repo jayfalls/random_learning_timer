@@ -68,7 +68,11 @@ class SignalObserver:
             None
         """
         if not signal in self.signal_observers:
-            print(f"{SIGNAL_NOT_FOUND}{signal}")
             return
         function_callable = self.signal_observers[signal]
-        _ = [function_callable(argument) for argument in args if isinstance(argument, str)]
+        function_callable(*args)
+        if len(args) > 1:
+            _ = [function_callable(argument) for argument in args if isinstance(argument, str)]
+            return
+        function_callable(*args)
+            

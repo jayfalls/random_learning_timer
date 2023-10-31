@@ -16,7 +16,7 @@ from app.interfaces.signal_observer import SignalObserver
 IO_SIGNALS: Enum = SIGNALS.IO_SIGNALS.value
 AUDIO_SIGNALS: Enum = SIGNALS.AUDIO_SIGNALS.value
 ### Modifiers
-RANDOM_TIME_SPAN: tuple = (360, 1080) # Seconds
+RANDOM_TIME_SPAN: tuple = (360, 900) # Seconds
 
 
 # FUNCTIONS
@@ -118,11 +118,12 @@ class RandomTimer:
             None
         """
         self.time_up = False
-        tasks: tuple = (
+        coroutines: tuple = (
             self.__time_has_passed(length_minutes),
             self.__random_notify(),
-            self.__print_progress()
+            self.__print_progress(),
         )
+        tasks: list = [asyncio.create_task(coroutine) for coroutine in coroutines]
         await asyncio.wait(tasks, return_when=asyncio.FIRST_COMPLETED)
         self.time_up = True
         print()

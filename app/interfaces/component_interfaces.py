@@ -107,6 +107,15 @@ class CLIIOInterface(IOInterface):
     # OUTPUT
     @staticmethod
     def print(text: str) -> None:
+        """
+        Print the given text to the command line interface.
+
+        Args:
+            text (str): The text to be printed.
+
+        Returns:
+            None: This function does not return anything.
+        """
         cli_io.immediate_print(text)
 
 class RandomTimerInterface(TimerInterface):

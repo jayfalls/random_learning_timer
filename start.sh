@@ -12,4 +12,4 @@ source env/bin/activate
 pip install -r requirements.txt
 
 # Run the app
-xterm -e "python3 $SCRIPT_DIR/app/study_timer.py"
+python3 $SCRIPT_DIR/app/study_timer.py
